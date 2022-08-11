@@ -121,11 +121,12 @@ function* chain<T>(...args: IterableIterator<T>[]) {
 export function registerWidgetManager(
   context: DocumentRegistry.IContext<INotebookModel>,
   rendermime: IRenderMimeRegistry,
+  tracker: INotebookTracker,
   renderers: IterableIterator<WidgetRenderer>
 ) {
   let wManager = Private.widgetManagerProperty.get(context);
   if (!wManager) {
-    wManager = new WidgetManager(context, rendermime, SETTINGS);
+    wManager = new WidgetManager(context, rendermime, tracker, SETTINGS);
     WIDGET_REGISTRY.forEach(data => wManager.register(data));
     Private.widgetManagerProperty.set(context, wManager);
   }
@@ -233,6 +234,7 @@ function activateWidgetExtension(
       registerWidgetManager(
         panel.context,
         panel.content.rendermime,
+        tracker,
         chain(
           widgetRenderers(panel.content),
           outputViews(app, panel.context.path)
@@ -245,6 +247,7 @@ function activateWidgetExtension(
       registerWidgetManager(
         panel.context,
         panel.content.rendermime,
+        tracker,
         chain(
           widgetRenderers(panel.content),
           outputViews(app, panel.context.path)

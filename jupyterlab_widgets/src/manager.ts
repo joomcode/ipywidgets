@@ -18,7 +18,7 @@ import {
 } from '@lumino/widgets';
 
 import {
-  INotebookModel
+  INotebookModel, INotebookTracker
 } from '@jupyterlab/notebook';
 
 import {
@@ -98,9 +98,10 @@ class BackboneViewWrapper extends Widget {
  */
 export
 class WidgetManager extends ManagerBase<Widget> implements IDisposable {
-  constructor(context: DocumentRegistry.IContext<INotebookModel>, rendermime: IRenderMimeRegistry, settings: WidgetManager.Settings) {
+  constructor(context: DocumentRegistry.IContext<INotebookModel>, rendermime: IRenderMimeRegistry, tracker: INotebookTracker, settings: WidgetManager.Settings) {
     super();
     this._context = context;
+    this._tracker = tracker;
     this._rendermime = rendermime;
 
     // Set _handleCommOpen so `this` is captured.
@@ -448,8 +449,13 @@ class WidgetManager extends ManagerBase<Widget> implements IDisposable {
     }
   }
 
+  getTracker(){
+    return this._tracker;
+  }
+
   private _handleCommOpen: (comm: Kernel.IComm, msg: KernelMessage.ICommOpenMsg) => Promise<void>;
   private _context: DocumentRegistry.IContext<INotebookModel>;
+  private _tracker: INotebookTracker;
   private _registry: SemVerCache<ExportData> = new SemVerCache<ExportData>();
   private _rendermime: IRenderMimeRegistry;
 
